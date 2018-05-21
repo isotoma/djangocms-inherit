@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
+from cms.plugin_rendering import ContentRenderer
 from cms.utils import get_language_from_request
 from cms.utils.moderator import get_cmsplugin_queryset
 from cms.utils.plugins import downcast_plugins, build_plugin_tree
@@ -62,19 +63,11 @@ class InheritPagePlaceholderPlugin(CMSPluginBase):
             yield self._render_plugin(plugin_tree[0], context)
 
     def _render_plugin(self, plugin, context):
-        cms_content_renderer = context.get('cms_content_renderer')
-
-        if cms_content_renderer:
-            # djangoCMS >= 3.4
-            content = cms_content_renderer.render_plugin(
-                instance=plugin,
-                context=context,
-                editable=False,
-            )
-        else:
-            plugin_context = copy.copy(context)
-            content = plugin.render_plugin(plugin_context)
-        return content
+        return ContentRenderer(context["request"]).render_plugin(
+            instance=plugin,
+            context=context,
+            editable=False,
+        )
 
     def render(self, context, instance, placeholder):
         context['object'] = instance
