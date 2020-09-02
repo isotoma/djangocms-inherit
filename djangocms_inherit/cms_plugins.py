@@ -104,10 +104,7 @@ class InheritPagePlaceholderPlugin(CMSPluginBase):
         return context
 
     def get_form(self, request, obj=None, **kwargs):
-        if obj and obj.page and obj.page.site:
-            site = obj.page.site
-        else:
-            site = get_current_site(request)
+        site = get_current_site(request)
 
         FormClass = super(InheritPagePlaceholderPlugin, self).get_form(
             request, obj, **kwargs)
